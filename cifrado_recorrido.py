@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-from typing import List, Tuple, Optional
-
-# Vocabulario: A..Z => 0..25, ESPACIO => 26
+from typing import List, Tuple, Optional# Vocabulario: A..Z => 0..25, ESPACIO => 26
 CHAR_TO_VAL = {chr(ord('A') + i): i for i in range(26)}
-CHAR_TO_VAL[' '] = 26
-# Valor a caracter
+CHAR_TO_VAL[' '] = 26# Valor a caracter
 VAL_TO_CHAR = {v: k for k, v in CHAR_TO_VAL.items()}
 
 def char_to_val(ch: str) -> int:
@@ -17,15 +14,13 @@ def val_to_char(v: int) -> str:
     v %= 27
     return VAL_TO_CHAR[v]
 
-def limpiar_texto(texto: str) -> str:
-    # Mantener solo A-Z y espacio; convertir a mayÃºsculas
+def limpiar_texto(texto: str) -> str:  # Mantener solo A-Z y espacio; convertir a mayÃºsculas
     res = []
     for c in texto:
         if c.upper() >= 'A' and c.upper() <= 'Z':
             res.append(c.upper())
         elif c == ' ':
-            res.append(' ')
-        # ignorar otros caracteres
+            res.append(' ')     # ignorar otros caracteres
     return ''.join(res)
 
 def construir_matriz(texto: str, n: int, m: int) -> Tuple[List[List[Optional[str]]], List[Tuple[int,int]]]:
@@ -95,27 +90,20 @@ def cifrar_texto(texto: str, n: int, m: int) -> Tuple[str, int, List[Tuple[int,i
     """
     matriz, _ = construir_matriz(texto, n, m)
     posiciones = permutacion_de_reordenamiento(matriz)  # orden de llenado de caracteres vÃ¡lidos
-    E0 = calcular_E0(n, m)
-    #print(f"EL valir de E0 ES: {E0}")
-    # Construir la secuencia de caracteres según la permutacion:
+    E0 = calcular_E0(n, m) # Construir la secuencia de caracteres según la permutacion:
     # Primer paso: crear una lista de caracteres en el orden de lectura de posiciones
     chars = []
     for (r, c) in posiciones:
         ch = matriz[r][c]
         if ch is None:
-            continue
-        chars.append(ch)
-    # Asegurar que chars coincide con el texto filtrado y llenado (ya estÃ¡ filtrado)
-    # Aplicar cifrado carÃ¡cter a carÃ¡cter con E0 (no se indica que E0 cambie durante el proceso)
+            continue    # Asegurar que chars coincide con el texto filtrado y llenado (ya estÃ¡ filtrado)
+        chars.append(ch)     # Aplicar cifrado carÃ¡cter a carÃ¡cter con E0 (no se indica que E0 cambie durante el proceso)
     cifrado = []
     for ch in chars:
         v = char_to_val(ch)
-        #print(f"Veamos como cifra el texto, el caracter es: {v}")
         v2 = (v + E0) % 27
-        #print(f"Veamos el resultado de v+E0 MOD 27: {v2}")
         cifrado.append(val_to_char(v2))
     texto_cifrado = ''.join(cifrado)
-
     return texto_cifrado, E0, posiciones
 
 def descifrar_texto(texto_cifrado: str, n: int, m: int, posiciones: List[Tuple[int,int]]) -> str:
@@ -125,21 +113,18 @@ def descifrar_texto(texto_cifrado: str, n: int, m: int, posiciones: List[Tuple[i
     Devuelve el texto descifrado en el orden original de la matriz (sin reconstrucciÃ³n final).
     """
     E0 = calcular_E0(n, m)
-    chars = list(texto_cifrado)
-    # Revertir: v = (v_cifrado - E0) mod 27
+    chars = list(texto_cifrado)  # Revertir: v = (v_cifrado - E0) mod 27
     descifrado = []
     for ch in chars:
         v = char_to_val(ch)
-        v2 = (v - E0) % 27
-        descifrado.append(val_to_char(v2))
-    # Ahora mapear de vuelta a texto en posiciones originales usando la permutaciÃ³n
-    # Construimos una matriz n x m con estos chars en el orden de posiciones
-    matriz = [[None for _ in range(m)] for _ in range(n)]
-    # Colocamos en la misma secuencia de posiciones
+        v2 = (v - E0) % 27     # Ahora mapear de vuelta a texto en posiciones originales usando la permutaciÃ³n
+        descifrado.append(val_to_char(v2))     # Construimos una matriz n x m con estos chars en el orden de posiciones
+
+
+    matriz = [[None for _ in range(m)] for _ in range(n)]     # Colocamos en la misma secuencia de posiciones
     for idx, (r, c) in enumerate(posiciones):
         if idx < len(descifrado):
-            matriz[r][c] = descifrado[idx]
-    # Extraemos el texto fila por fila, omitiendo None
+            matriz[r][c] = descifrado[idx]  # Extraemos el texto fila por fila, omitiendo None
     texto_descifrado = []
     for i in range(n):
         for j in range(m):
@@ -148,7 +133,6 @@ def descifrar_texto(texto_cifrado: str, n: int, m: int, posiciones: List[Tuple[i
                 texto_descifrado.append(ch)
     return ''.join(texto_descifrado)
 
-
 def calc_tam(texto:str):
     n,m=2,2
     texto=texto.upper()
@@ -156,7 +140,6 @@ def calc_tam(texto:str):
     for c in texto:
         if('A' <= c<= 'Z') or c ==' ':
             contador+=1
-
     alto = False
     nn=False
     mm=False
@@ -173,13 +156,44 @@ def calc_tam(texto:str):
             else:
                 nn= False
                 mm=False
+    return n,m # Ejemplo de uso con el Caso 1 (Hola)
 
-    #print(f"Revisemos la long de cont: {contador}")
-    return n,m
-# Ejemplo de uso con el Caso 1 (Hola)
+def siguiente_archivo(prefijo, extension=".txt"):
+    i = 1
+    while True:
+        nombre = f"{prefijo}_{i}{extension}"
+        try:
+            with open(nombre, "r"):
+                i += 1
+        except FileNotFoundError:
+            return nombre
+
+def leer_archivo(nombre):#2. Leer archivo simple
+    with open(nombre, "r", encoding="utf-8") as f:
+        return f.read()
+
+def guardar_archivo(nombre, contenido,posiciones): # 3. Guardar archivo
+    with open(nombre, "w", encoding="utf-8") as f:
+        f.write(contenido + "\n")
+        f.write(posiciones)
+
+def leer_cifrado(nombre):
+    with open(nombre, "r", encoding="utf-8") as f:
+        lineas = f.readlines()
+    cifrado = lineas[0].strip()
+    pos_str = lineas[1].strip()
+    posiciones = [(int(p[0]), int(p[1])) for p in pos_str.split('-')]
+    return cifrado, posiciones
+
+def extraer_posiciones(historia):
+    import re
+    nums = list(map(int, re.findall(r'\d', historia)))
+    if len(nums) % 2 != 0:
+        raise ValueError("Cantidad impar de nÃºmeros")
+    return [(nums[i], nums[i+1]) for i in range(0, len(nums), 2)]
+
 def ejemplo_case_1():
     texto = "Hola"
-    #n, m = 2,2  # tal como en el ejemplo
     n,m = calc_tam(texto)
     texto_cifrado, E0, posiciones = cifrar_texto(texto, n, m)
     print("Texto cifrado_1:", texto_cifrado)
@@ -204,10 +218,113 @@ def ejemplo_case_2():
     descifrado_n=descifrar_texto(texto_cifrado,n,m,posiciones)
     print(f"Texto decifrado_caso 2: {descifrado_n}")
 
+def posiciones_a_string(posiciones):
+    return '-'.join(f"{r}{c}" for r, c in posiciones)
 
+import json
 
-# si se desea correr el ejemplo
-if __name__ == "__main__":
-    ejemplo_case_1()
-    ejemplo_case_2()
+def cargar_historias(ruta="historias.json"):
+    with open(ruta, "r", encoding="utf-8") as f:
+        return json.load(f)
 
+def insertar_numeros(historia, posiciones):
+    import random
+    PALABRAS_RELLENO = ["dos", "tres", "cuatro"]
+    numeros = [str(n) for tupla in posiciones for n in tupla]
+    partes = historia.split("xxy")
+    resultado = partes[0]
+    i = 0
+    for parte in partes[1:]:
+        if i < len(numeros):
+            resultado += numeros[i]
+            i += 1
+        else:
+            resultado += random.choice(PALABRAS_RELLENO)
+        resultado += parte
+    return resultado
+
+def generar_historia(historias, posiciones, nm):
+    import random
+    PALABRAS_RELLENO = ["dos", "tres", "cuatro", "cinco", "seis"]
+    claves = sorted(int(k) for k in historias.keys())
+    historia_base=""
+    clave_usada = None
+    for k in claves:
+        if nm <= k:
+            #historia_base=historias[str(k)][0]
+            historia_base=random.choice(historias[str(k)])
+            break
+    else:
+        raise ValueError("NO hay historia aedcuada.")
+    historia_final=insertar_numeros(historia_base, posiciones)
+    return historia_final
+
+def leer_cifrado_con_historia(nombre):
+    with open(nombre, "r", encoding="utf-8") as f:
+        lineas = f.readlines()
+    if len(lineas) < 2:
+        raise ValueError("El archivo no tiene el formato correcto")
+    cifrado = lineas[0].strip()
+    historia = "".join(lineas[1:]).strip()  # por si la historia tiene varias lineas
+    return cifrado, historia
+
+def extraer_posiciones(historia):
+    import re  # 1. sacar todos los digitos
+    nums = list(map(int, re.findall(r'\d', historia)))  # 2. validar que sean pares
+    if len(nums) % 2 != 0:
+        raise ValueError("Cantidad de numeros invalida (debe ser par)")  # 3. agrupar en tuplas
+    posiciones = [(nums[i], nums[i+1]) for i in range(0, len(nums), 2)]
+    return posiciones
+
+def menu():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Cifrar texto desde archivo")
+        print("2. Descifrar texto desde archivo")
+        print("3. Cifrar + usar historia (posiciones ocultas)")
+        print("4. DesCifrar + usar historia (posiciones ocultas)")
+        print("5. Salir")
+        opcion = input("Seleccione una opcion: ")
+        if opcion == "1":
+            texto = leer_archivo("texto_cifrar.txt")
+            n,m = calc_tam(texto)   # aqui usas tu funciÃ³n
+            cifrado, E0, posiciones = cifrar_texto(texto, n, m)
+            pos2=posiciones_a_string(posiciones)
+            nombre = siguiente_archivo("cifrado")
+            guardar_archivo(nombre, cifrado, pos2)
+            print(f"Cifrado guardado en {nombre}")
+        elif opcion == "2":
+            leer_cif, pos= leer_cifrado("texto_para_decifrar.txt")
+            n,m = calc_tam(leer_cif)
+            descifrado_n=descifrar_texto(leer_cif,n,m,pos)
+            print(f"Texto decifrado_caso 2: {descifrado_n}")
+            nombre = siguiente_archivo("des_cifrado")
+            guardar_archivo(nombre, descifrado_n, "")
+
+        elif opcion == "3":
+            historias=cargar_historias()
+            texto = leer_archivo("texto_cifrar.txt")
+            n,m = calc_tam(texto)      # aqui usas tu funciÃ³n
+            cifrado, E0, posiciones = cifrar_texto(texto, n, m)
+            pos2=posiciones_a_string(posiciones)
+            nombre = siguiente_archivo("cifrado_Historia")
+            nm=n*m
+            historia_1=generar_historia(historias, posiciones, nm)
+            historia_final=cifrado + "\n " + historia_1
+            guardar_archivo(nombre, historia_final, "")
+            print(f"Cifrado con historia guardado en {nombre}")
+        elif opcion == "4":
+            texto_cifradp, historia= leer_cifrado_con_historia("texto_para_decifrar_historia.txt")
+            posiciones=extraer_posiciones(historia)
+            n,m = calc_tam(texto_cifradp)
+            descifrado_n=descifrar_texto(texto_cifradp,n,m,posiciones)
+            print(f"Texto descifrado es: {descifrado_n}")
+        elif opcion == "5":
+            break
+        else:
+            print("OpciÃ³n invÃ¡lida")
+
+if __name__ == "__main__":# si se desea correr el ejemplo
+    menu()
+    #ejemplo_case_1()
+    #ejemplo_case_2()
