@@ -244,20 +244,28 @@ def insertar_numeros(historia, posiciones):
     return resultado
 
 def generar_historia(historias, posiciones, nm):
-    import random
-    PALABRAS_RELLENO = ["dos", "tres", "cuatro", "cinco", "seis"]
-    claves = sorted(int(k) for k in historias.keys())
-    historia_base=""
-    clave_usada = None
-    for k in claves:
-        if nm <= k:
-            #historia_base=historias[str(k)][0]
-            historia_base=random.choice(historias[str(k)])
-            break
-    else:
-        raise ValueError("NO hay historia aedcuada.")
-    historia_final=insertar_numeros(historia_base, posiciones)
-    return historia_final
+    try: 
+        import random
+        PALABRAS_RELLENO = ["dos", "tres", "cuatro", "cinco", "seis"]
+        claves = sorted(int(k) for k in historias.keys())
+        historia_base=""
+        clave_usada = None
+
+        for k in claves:
+            if nm <= k:
+                print(f"miremos K.  {k}")
+                print(f"miremos nm : {nm}")
+                #historia_base=historias[str(k)][0]
+                historia_base=random.choice(historias[str(k)])
+                break
+        else:
+            raise ValueError("NO hay historia aedcuada.")
+        print(f"EL conteo de palabras es: {historia_base.count("xxy")}")
+        historia_final=insertar_numeros(historia_base, posiciones)
+        return historia_final
+
+    except ValueError:
+        print("NO hay historia adecuada.")
 
 def leer_cifrado_con_historia(nombre):
     with open(nombre, "r", encoding="utf-8") as f:
@@ -309,6 +317,7 @@ def menu():
             pos2=posiciones_a_string(posiciones)
             nombre = siguiente_archivo("cifrado_Historia")
             nm=n*m
+            #print(f"miremos posiciones {posiciones}")
             historia_1=generar_historia(historias, posiciones, nm)
             historia_final=cifrado + "\n " + historia_1
             guardar_archivo(nombre, historia_final, "")
@@ -316,6 +325,7 @@ def menu():
         elif opcion == "4":
             texto_cifradp, historia= leer_cifrado_con_historia("texto_para_decifrar_historia.txt")
             posiciones=extraer_posiciones(historia)
+            #print(f"miremos posiciones {posiciones}")
             n,m = calc_tam(texto_cifradp)
             descifrado_n=descifrar_texto(texto_cifradp,n,m,posiciones)
             print(f"Texto descifrado es: {descifrado_n}")
